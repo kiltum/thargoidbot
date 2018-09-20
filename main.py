@@ -4,6 +4,7 @@
 #  pip3 install python-telegram-bot --upgrade
 
 import json
+import random
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
@@ -12,6 +13,21 @@ from telegram.error import (TelegramError, Unauthorized, BadRequest,
 import logging
 
 config = json.loads("{}")
+
+reply_what_you_want=[]
+reply_barnacle=[]
+
+
+def initReply():
+    global reply_what_you_want
+    reply_what_you_want.append("Человечишко, чего тебе надо?")
+    reply_what_you_want.append("Опять ты ...")
+    reply_what_you_want.append("Человек - это прежде всего кожаный мешок с вкусной и питательной биомассой! Понял?")
+
+    reply_barnacle.append("Не дам, самим мало!")
+    reply_barnacle.append("Лети в Pleiades Sector OI-T C3-7 A 6  -42.77, -21.70 и получи лазером в твою непутевую башку")
+    reply_barnacle.append("Pleiades Sector IX-S B4-4 B 1 -40.46, 25.81 Просканируй, получи свои 30 серебрянников и вали")
+    reply_barnacle.append("Нафиг они тебе? Лети в maya и там бери свои Meta-Alloy пока не сожгли всех")
 
 def configLoad(name):
     global config
@@ -39,10 +55,10 @@ def message(bot, update):
     bot.send_message(chat_id=-265595051, text=str(update))
     if "эй, таргоид" in update.message.text:
         if "барнакл" in update.message.text:
-            bot.send_message(chat_id=update.message.chat_id, text="Не дам, самим мало!",
+            bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_barnacle),
                              reply_to_message_id=update.message.message_id)
         else:
-            bot.send_message(chat_id=update.message.chat_id, text="Чё хотел, кожанный мешок?", reply_to_message_id=update.message.message_id)
+            bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_what_you_want), reply_to_message_id=update.message.message_id)
     # bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
     # print(update)
     # print(update.message.chat.id)
@@ -79,6 +95,8 @@ def main():
     if configLoad("config.json") != True:
         print("I need config.json")
         exit(1)
+
+    initReply()
 
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         level=logging.INFO)
