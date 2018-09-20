@@ -7,6 +7,8 @@ import json
 from telegram.ext import Updater
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
+from telegram.error import (TelegramError, Unauthorized, BadRequest,
+                            TimedOut, ChatMigrated, NetworkError)
 import logging
 
 config = json.loads("{}")
@@ -30,16 +32,48 @@ def configGet(name):
 
 
 def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Привет! Я один из таргоидов, поэтому не доставайте меня")
+    if update.message.chat.type == 'private':
+        bot.send_message(chat_id=update.message.chat_id, text="Привет! Я один из таргоидов, поэтому не доставайте меня")
 
 def message(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
-    print(update)
-    print(update.message.chat.id)
-    print(update.message.chat.type)
+    bot.send_message(chat_id=-265595051, text=str(update))
+    if "эй, таргоид" in update.message.text:
+        if "барнакл" in update.message.text:
+            bot.send_message(chat_id=update.message.chat_id, text="Не дам, самим мало!",
+                             reply_to_message_id=update.message.message_id)
+        else:
+            bot.send_message(chat_id=update.message.chat_id, text="Чё хотел, кожанный мешок?", reply_to_message_id=update.message.message_id)
+    # bot.send_message(chat_id=update.message.chat_id, text=update.message.text)
+    # print(update)
+    # print(update.message.chat.id)
+    # print(update.message.chat.type)
 
 def unknown(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Чё?")
+    if update.message.chat.type == 'private':
+        bot.send_message(chat_id=update.message.chat_id, text="Чё?")
+
+def error_callback(bot, update, error):
+    try:
+        raise error
+    except Unauthorized:
+        print("Unathorized")
+        # remove update.message.chat_id from conversation list
+    except BadRequest:
+        print("BadRequest")
+        # handle malformed requests - read more below!
+    except TimedOut:
+        print("TimedOut")
+        # handle slow connection problems
+    except NetworkError:
+        print("NetworkError")
+        # handle other connection problems
+    except ChatMigrated as e:
+        print("ChatMigrated")
+        # the chat_id of a group has changed, use e.new_chat_id instead
+    except TelegramError:
+        print("telegramError")
+        # handle all other telegram related errors
+
 
 def main():
     if configLoad("config.json") != True:
@@ -61,7 +95,12 @@ def main():
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
 
+    dispatcher.add_error_handler(error_callback)
+
+    print("Ready")
+
     updater.start_polling()
+    updater.idle()
 
 
 
