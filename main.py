@@ -2,6 +2,7 @@
 
 
 #  pip3 install python-telegram-bot --upgrade
+# pip3 install gensim  / https://nlpub.ru/Russian_Distributional_Thesaurus https://habr.com/post/340190/
 
 import json
 import random
@@ -165,7 +166,7 @@ def start(bot, update):
 
 
 def message(bot, update):
-    bot.send_message(chat_id=-265595051, text=str(update))
+    # bot.send_message(chat_id=-265595051, text=str(update))
 
     text = update.message.text.lower()
     # simple stupid AI simulator
@@ -173,7 +174,7 @@ def message(bot, update):
         if "барнакл" in text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_barnacle),
                              reply_to_message_id=update.message.message_id)
-        elif "летать" in text:
+        elif "лета" in text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(places),
                              reply_to_message_id=update.message.message_id)
         elif "фос" in text:  # карбофос, дихлофос
@@ -182,6 +183,9 @@ def message(bot, update):
         elif "правил" in text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(rules),
                              reply_to_message_id=update.message.message_id)
+        elif "инж" in text:
+            bot.send_message(chat_id=update.message.chat_id, text="https://inara.cz/galaxy-engineers/",
+                             reply_to_message_id=update.message.message_id, disable_web_page_preview=1)
 
         else:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_what_you_want),
@@ -217,6 +221,7 @@ def new_chat_member(bot, update):
     # last_name
     # ': '
     # Scon
+    # https: // github.com / Whalepool / Natalia / blob / master / natalia.py
     # '}],
     bot.send_message(chat_id=-265595051, text=str(update))
 
