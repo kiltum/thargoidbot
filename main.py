@@ -19,6 +19,7 @@ reply_barnacle = []
 places = []
 killer = []
 rules = []
+welcome = []
 
 
 def initReply():
@@ -27,6 +28,7 @@ def initReply():
     global places
     global killer
     global rules
+    global welcome
 
     reply_what_you_want.append("Человечишко, чего тебе надо?")
     reply_what_you_want.append("Опять ты ...")
@@ -48,7 +50,10 @@ def initReply():
     rules.append("Политика это вам не тут, а вовсе даже в powerplay")
     rules.append("Хочешь повоевать? Сначала наточи свой лазер!")
 
-
+    welcome.append("Привет, летун! Прочитай правила стыковки и скажи что-нибудь про человеков. Таргоиды нынче злые ...")
+    welcome.append("Если ты коммандер, то скажи что-нибудь доброе. А то ботом назначат ...")
+    welcome.append("Если ты человек, то не будь таргоидом! Докажи что ты не робот!")
+    welcome.append("Чем CMDR от коммандера отличается? Говори или будешь сбит!")
 
     reply_barnacle.append("Не дам, самим мало!")
     reply_barnacle.append(
@@ -161,18 +166,20 @@ def start(bot, update):
 
 def message(bot, update):
     bot.send_message(chat_id=-265595051, text=str(update))
+
+    text = update.message.text.lower()
     # simple stupid AI simulator
-    if "й, таргоид" in update.message.text:
-        if "барнакл" in update.message.text:
+    if "й, таргоид" in text:
+        if "барнакл" in text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_barnacle),
                              reply_to_message_id=update.message.message_id)
-        elif "летать" in update.message.text:
+        elif "летать" in text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(places),
                              reply_to_message_id=update.message.message_id)
-        elif "фос" in update.message.text:  # карбофос, дихлофос
+        elif "фос" in text:  # карбофос, дихлофос
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(killer),
                              reply_to_message_id=update.message.message_id)
-        elif "правил" in update.message.text:
+        elif "правил" in text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(rules),
                              reply_to_message_id=update.message.message_id)
 
@@ -183,6 +190,48 @@ def message(bot, update):
     # print(update)
     # print(update.message.chat.id)
     # print(update.message.chat.type)
+# Resolve message data to a readable name
+def get_name(user):
+    try:
+        name = user.first_name
+    except (NameError, AttributeError):
+        try:
+            name = user.username
+        except (NameError, AttributeError):
+            logger.info("No username or first name.. wtf")
+            return	""
+    return name
+
+
+def new_chat_member(bot, update):
+    # new_chat_members
+    # ': [{'
+    # id
+    # ': 561276853, '
+    # first_name
+    # ': '
+    # Alex
+    # ', '
+    # is_bot
+    # ': False, '
+    # last_name
+    # ': '
+    # Scon
+    # '}],
+    bot.send_message(chat_id=-265595051, text=str(update))
+
+    # name = get_name(update.message._new_chat_member)
+
+    bot.send_message(chat_id=update.message.chat_id, text=random.choice(welcome),
+                     reply_to_message_id=update.message.message_id)
+    # logger.info("User name " + name)
+
+def restrict_user(bot, update):
+    pass
+    # bot.restrict_chat_member(chat_id=update.message.chat_id, user_id, until_date=(datetime.datetime.now() + relativedelta(years=2)),
+    #                          can_send_messages=False, can_send_media_messages=False, can_send_other_messages=False,
+    #                          can_add_web_page_previews=False)
+    # bot.delete_message(chat_id=chat_id, message_id=message_id)
 
 
 def unknown(bot, update):
@@ -226,16 +275,15 @@ def main():
     updater = Updater(token=configGet("token"))
     dispatcher = updater.dispatcher
 
-    start_handler = CommandHandler('start', start)
-    dispatcher.add_handler(start_handler)
+    dispatcher.add_handler(CommandHandler('start', start))
 
-    message_handler = MessageHandler(Filters.text, message)
-    dispatcher.add_handler(message_handler)
+    dispatcher.add_handler(MessageHandler(Filters.text, message))
 
-    unknown_handler = MessageHandler(Filters.command, unknown)
-    dispatcher.add_handler(unknown_handler)
+    dispatcher.add_handler(MessageHandler(Filters.command, unknown))
 
     dispatcher.add_error_handler(error_callback)
+
+    dispatcher.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_chat_member))
 
     print("Ready")
 
