@@ -17,23 +17,45 @@ config = json.loads("{}")
 reply_what_you_want = []
 reply_barnacle = []
 places = []
+killer = []
+rules = []
 
 
 def initReply():
     global reply_what_you_want
     global reply_barnacle
     global places
+    global killer
+    global rules
 
     reply_what_you_want.append("Человечишко, чего тебе надо?")
     reply_what_you_want.append("Опять ты ...")
     reply_what_you_want.append("Человек - это прежде всего кожаный мешок с вкусной и питательной биомассой! Понял?")
+    reply_what_you_want.append("Я, как инсектоидная фемина, не рассматриваю тебя как партнера для спаривания! Лети отседа!")
+    reply_what_you_want.append("Мои сердца мерцают не для тебя!")
+    reply_what_you_want.append("Победили Защитников, растерзаем и вас ...")
+    reply_what_you_want.append("Давно caustic damage не получал?")
+    reply_what_you_want.append("И это весь твой Xeno Scanner? Такой маленький?")
+
+    killer.append("И этим ты решил отплатить мне за все, что я для тебя сделала?")
+    killer.append("Фи, меня этим не возьмешь!")
+    killer.append("Редиска!")
+    killer.append("Отсыпь еще, а?")
+
+    rules.append("Будь человеком! Ведь это так вкусно!")
+    rules.append("Не пиши часто, а то у меня головы болят")
+    rules.append("Если ты агрессивен, то место тебе в клетке")
+    rules.append("Политика это вам не тут, а вовсе даже в powerplay")
+    rules.append("Хочешь повоевать? Сначала наточи свой лазер!")
+
+
 
     reply_barnacle.append("Не дам, самим мало!")
     reply_barnacle.append(
         "Лети в Pleiades Sector OI-T C3-7 A 6  -42.77, -21.70 и получи лазером в твою непутевую башку")
     reply_barnacle.append(
         "Pleiades Sector IX-S B4-4 B 1 -40.46, 25.81 Просканируй, получи свои 30 серебрянников и вали")
-    reply_barnacle.append("Нафиг они тебе? Лети в maya и там бери свои Meta-Alloy пока не сожгли всех")
+    reply_barnacle.append("Нафиг они тебе? Лети в MAIA и там бери свои Meta-Alloy пока не сожгли всех")
 
     places.append("Almeida Landing Conn A 3 A 73.3809 102.3764 (Added by CMDR. Piers Chip)")
     places.append("Barnacle California Sector LC-V c2-10 A 3 -17.3842 -18.7939 (Added by CMDR. Drygin)")
@@ -139,13 +161,21 @@ def start(bot, update):
 
 def message(bot, update):
     bot.send_message(chat_id=-265595051, text=str(update))
-    if "эй, таргоид" in update.message.text:
+    # simple stupid AI simulator
+    if "й, таргоид" in update.message.text:
         if "барнакл" in update.message.text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_barnacle),
                              reply_to_message_id=update.message.message_id)
         elif "летать" in update.message.text:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(places),
                              reply_to_message_id=update.message.message_id)
+        elif "фос" in update.message.text:  # карбофос, дихлофос
+            bot.send_message(chat_id=update.message.chat_id, text=random.choice(killer),
+                             reply_to_message_id=update.message.message_id)
+        elif "правил" in update.message.text:
+            bot.send_message(chat_id=update.message.chat_id, text=random.choice(rules),
+                             reply_to_message_id=update.message.message_id)
+
         else:
             bot.send_message(chat_id=update.message.chat_id, text=random.choice(reply_what_you_want),
                              reply_to_message_id=update.message.message_id)
